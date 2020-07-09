@@ -14,15 +14,15 @@ CURVE是网易自主设计研发的高性能、高可用、高可靠分布式文
 
 ![image-20200709165154104](https://raw.githubusercontent.com/opencurve/opencurve.github.io/master/image/architecture.png)
 
-##### MDS
+#### MDS
 
 MDS是中心节点。一是存储管理元数据信息，包括系统的拓扑信息、文件系统的Namespace ( 树形目录结构，文件和目录，目录元信息等 ) 、Copyset ( Raft 复制组) 位置信息。二是感知集群状态并进行合理调度，包括感知Chunkserver上下线、收集Chunkserver负载信息、集群负载均衡与故障修复。MDS通过Etcd进行选主实现高可用，Leader-MDS 和 Follower-MDS并不进行数据同步，Leader-MDS挂掉之后，Follower-MDS从ETCD加载数据后再启动服务。
 
-##### Chunkserver
+#### Chunkserver
 
 Chunkserver是数据节点，负责数据存储，存储数据的基本单位是Copyset，支持覆盖写。Chunkserver使用 Raft 协议做复制，保持数据的一致性和容灾。副本以 Copyset 为单位进行管理，不同节点上的多个 Copyset 构成一个 Raft Group，互为副本。数据在多个 Chunkserver 之间的负载均衡由 MDS 调度，是以 CopySet 为单位进行调度。
 
-##### Client
+#### Client
 
 Client是客户端，向应用提供类Posix文件系统接口，与MDS交互实现对元数据的增删改查，与Chunkserver交互实现对数据的增删改查，对io进行切分，对IOPS和带宽进行指定的QOS控制，Client还支持热升级。
 

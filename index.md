@@ -56,5 +56,5 @@ Client是客户端，向应用提供类Posix文件系统接口，与MDS交互实
 
 ### 项目地址
 
-github源码地址：https://github.com/opencurve/curve
+[github源码地址](https://github.com/opencurve/curve)
 

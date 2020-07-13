@@ -2,17 +2,15 @@
 
 ### CURVE是什么
 
-CURVE是网易自主设计研发的高性能、高可用、高可靠分布式文件系统，具有非常良好的扩展性。基于该存储底座可以打造适用于不同应用场景的存储系统，如块存储、对象存储、云原生数据库等。CURVE 的设计开发始终围绕三个理念：一是顺应当前存储硬件设施发展趋势，做到软硬件结合打造顶级的存储产品；二是秉持 "Simple Can be harder than complex"，了解问题本质情况下选择最简单的方案解决问题；三是拥抱开源，在充分调研的前提下使用优秀的开源项目组件，避免造轮子。
+CURVE是网易自主设计研发的高性能、高可用、高可靠分布式存储系统，具有非常良好的扩展性。基于该存储底座可以打造适用于不同应用场景的存储系统，如块存储、对象存储、云原生数据库等。CURVE 的设计开发始终围绕三个理念：一是顺应当前存储硬件设施发展趋势，做到软硬件结合打造顶级的存储产品；二是秉持 "Simple Can be harder than complex"，了解问题本质情况下选择最简单的方案解决问题；三是拥抱开源，在充分调研的前提下使用优秀的开源项目组件，避免造轮子。
 
-当前我们基于CURVE已经实现了高性能块存储系统，支持快照克隆和恢复, 支持 qemu 和 nbd 两种挂载方式, 在网易内部作为高性能云盘使用。
+当前我们基于CURVE已经实现了高性能块存储系统，支持快照克隆和恢复 ,支持QEMU虚拟机和物理机NBD设备两种挂载方式, 在网易内部作为高性能云盘使用。
 
 ### CURVE架构
 
 ### 基本架构
 
 要深入了解 CURVE 首先要了解 CURVE 整体架构。CURVE集群主要包括三个核心组件：MDS、Chunkserver、Client。
-
-
 
 ![image-20200709165154104](https://raw.githubusercontent.com/opencurve/opencurve.github.io/master/image/architecture.png)
 
@@ -34,13 +32,11 @@ Client是客户端，向应用提供类Posix文件系统接口，与MDS交互实
 
 ![image-snap](https://raw.githubusercontent.com/opencurve/opencurve.github.io/master/image/architecture_snap.png)
 
-
-
 ### 核心特性
 
 #### 高性能
 
-高性能是 CURVE 的一大特点，也是一直以来的目标。RPC 层面 CURVE 采用了在高性能和低延迟上有足够大优势的百度的 brpc；一致性层面 CURVE 选择了 quorum 机制的 raft，并使用了百度的开源实现 braft，从协议层面来说 quorum 机制在延迟方面优于多副本强一致的方式，实现上 CURVE 对 braft 的快照实现进行了优化，在状态机的实现上采用 chunkfilepool 的方式 ( 初始化集群的时候格式化出指定比例的空间用作 chunk ) 使得底层的写入放大为 0；此外采用在 chunk 上进行更细力度的地址空间的 hash 来使得读写分离，减小 io 碰撞 ( 该优化正在进行) 从而进一步提升了性能。
+高性能是 CURVE 的一大特点，也是一直以来的目标。RPC 层面 CURVE 采用了在高性能和低延迟上有足够大优势的 [brpc](https://github.com/apache/incubator-brpc)；一致性层面 CURVE 选择了 quorum 机制的 raft，并使用了c++版本的开源实现 [braft](https://github.com/baidu/braft)，从协议层面来说 quorum 机制在延迟方面优于多副本强一致的方式，实现上 CURVE 对 braft 的快照实现进行了优化，在状态机的实现上采用 chunkfilepool 的方式 ( 初始化集群的时候格式化出指定比例的空间用作 chunk ) 使得底层的写入放大为 0；此外采用在 chunk 上进行更细粒度的地址空间的 hash 来使得读写分离，减小 io 碰撞 ( 该优化正在进行) 从而进一步提升了性能。
 
 #### 高可用
 
@@ -58,4 +54,7 @@ Client是客户端，向应用提供类Posix文件系统接口，与MDS交互实
 
   ChunkServer是一个集群，通过Raft协议保持数据一致性，并通过MDS做负载均衡。单个节点失效时，会影响到这个节点上存储的所有Copyset。对于Copyset上的Leader节点，会中断服务，等待重新选举；对于Copyset上的ollower节点，不会影响服务。当某个Chunkserver节点失效且在一段时间内无法恢复，MDS会将其上的数据迁移到其他节点上。
 
-  
+### 项目地址
+
+github源码地址：https://github.com/opencurve/curve
+

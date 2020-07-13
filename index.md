@@ -36,7 +36,7 @@ CURVE块存储系统中快照克隆子系统是独立于CURVE核心服务的，�
 
 #### 高性能
 
-高性能是 CURVE 的一大特点，也是我们创建CURVE项目的初衷。RPC 层面 CURVE 采用了高性能和低延迟并且已开源的 [brpc](https://github.com/apache/incubator-brpc)；在一致性层面 选择了基于 quorum 机制并且开源的 [braft](https://github.com/baidu/braft)，从协议层面来说 quorum 机制在延迟方面天生优于多副本强一致的方式。另外实 CURVE 对 braft 的快照实现进行了优化，在状态机的实现上采用 chunkfilepool 的方式 ( 初始化集群的时候格式化出指定比例的空间用作 chunk ) 使得底层的写入放大为 0；此外CURVE还在chunk上进行更细力度的地址空间hash以达到读写分离、减小 IO碰撞等的效果，从而进一步提升IO性能。
+高性能是 CURVE 的一大特点，也是我们创建CURVE项目的初衷。RPC 层面 CURVE 采用了高性能和低延迟并且已开源的 [brpc](https://github.com/apache/incubator-brpc)；在一致性层面 选择了基于 quorum 机制并且开源的 [braft](https://github.com/baidu/braft)，从协议层面来说 quorum 机制在延迟方面天生优于多副本强一致的方式。实现上CURVE 对 braft 快照的实现进行了优化，在状态机的实现上采用 chunkfilepool 的方式 ( 初始化集群的时候格式化出指定比例的空间用作 chunk ) 使得底层的写入放大为 0；此外CURVE还在chunk上进行更细力度的地址空间hash以达到读写分离、减小 IO碰撞等的效果，从而进一步提升IO性能。
 
 #### 高可用
 

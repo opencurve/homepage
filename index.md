@@ -52,7 +52,7 @@ CURVE块存储系统中快照克隆子系统是独立于CURVE核心服务的，�
 
 - **ChunkServer**
 
-  ChunkServer是一个集群，通过Raft协议保持数据一致性，并通过MDS做负载均衡。单个节点失效时，会影响到这个节点上存储的所有Copyset。对于Copyset上的Leader节点，会中断服务，等待重新选举；对于Copyset上的ollower节点，服务不会受影响。当某个Chunkserver节点失效且在一段时间内无法恢复，MDS会将其上的数据迁移到其他节点上。
+  ChunkServer是一个集群，通过Raft协议保持数据一致性，并通过MDS做负载均衡。单个节点失效时，会影响到这个节点上存储的所有Copyset。对于Copyset上的Leader节点，会中断服务，等待重新选举；对于Copyset上的follower节点，服务不会受影响。当某个Chunkserver节点失效且在一段时间内无法恢复，MDS会将其上的数据迁移到其他节点上。
 
 ### 项目地址
 

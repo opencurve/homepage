@@ -60,7 +60,7 @@ CURVE块存储系统中快照克隆子系统是独立于CURVE核心服务的，�
 
 ### 联系方式
 
-微信交流群
+微信交流群：CURVE沟通交流群
 
-![](image/CURVE-wechatgroup.jpeg)
+<img src="image/CURVE-wechatgroup.jpeg" style="zoom: 25%;" />
 

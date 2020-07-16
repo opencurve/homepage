@@ -12,7 +12,7 @@ CURVE是网易自主设计研发的高性能、高可用、高可靠分布式存
 
 要深入了解 CURVE 首先要了解 CURVE 整体架构。CURVE集群主要包括三个核心组件：MDS、Chunkserver、Client。
 
-![image-20200709165154104](https://raw.githubusercontent.com/opencurve/opencurve.github.io/master/image/architecture.png)
+![image-20200709165154104](image/architecture.png)
 
 #### MDS
 
@@ -30,7 +30,7 @@ Client是客户端，向应用提供类Posix文件系统接口，与MDS交互实
 
 CURVE块存储系统中快照克隆子系统是独立于CURVE核心服务的，快照克隆操作由单独的SnapShotCloneServer进行处理，用户创建的快照会上传到S3集群以节约存储空间，并且支持增量和全量两种快照方式。
 
-![image-snap](https://raw.githubusercontent.com/opencurve/opencurve.github.io/master/image/architecture_snap.png)
+![image-snap](image/architecture_snap.png)
 
 ### 核心特性
 
@@ -57,4 +57,10 @@ CURVE块存储系统中快照克隆子系统是独立于CURVE核心服务的，�
 ### 项目地址
 
 [github源码地址](https://github.com/opencurve/curve)
+
+### 联系方式
+
+微信交流群
+
+![](image/CURVE-wechatgroup.jpeg)
 

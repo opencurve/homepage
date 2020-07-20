@@ -62,5 +62,9 @@ CURVE块存储系统中快照克隆子系统是独立于CURVE核心服务的，�
 
 微信交流群：CURVE沟通交流群
 
-<img src="image/CURVE-wechatgroup.jpeg" style="zoom: 25%;" />
+由于CURVE沟通交流群人数满200人，请先添加以下个人微信，再邀请进群
+
+
+
+<img src="image/CURVE-wechat.jpeg" style="zoom: 75%;" />
 

@@ -66,5 +66,5 @@ CURVE块存储系统中快照克隆子系统是独立于CURVE核心服务的，�
 
 
 
-<img src="image/CURVE-wechat.jpeg" style="zoom: 75%;" />
+<img src="image/curve-wechat.jpeg" style="zoom: 75%;" />
 

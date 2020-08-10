@@ -1,69 +1,66 @@
-[中文版](README.md)
+# Intro to CURVE
 
-[![BUILD Status](https://img.shields.io/jenkins/build?jobUrl=http%3A%2F%2F59.111.93.165%3A8080%2Fjob%2Fcurve_multijob%2F)](http://59.111.93.165:8080/job/curve_multijob/lastBuild)
-[![Jenkins Coverage](https://img.shields.io/jenkins/coverage/cobertura?jobUrl=http%3A%2F%2F59.111.93.165%3A8080%2Fjob%2Fcurve_multijob%2F)](http://59.111.93.165:8080/job/curve_multijob/HTML_20Report/)
-
-CURVE is a distributed storage system designed and developed independently by NetEase, featured with high performance, high availability, high reliability and well expansibility, and it can serve as the basis for storage systems designed for different scenario (e.g. block storage, object storage and cloud database). 
+### What is CURVE?
+CURVE is a distributed storage system designed and developed independently by NetEase, featured with high performance, high availability, high reliability and well expansibility, and it can serve as the basis for storage systems designed for different scenario (e.g. block storage, object storage and cloud database). During the development of CURVE we sticked to three principles:
+- Follow the trend of storage device and infrastructure nowadays to build top-level storage products that coordinate hardware and software perfectly.
+- 'Simple can be harder that complex'. As long as we can solve the problem well, we'll choose the most simple way.
+- Embrace open source components. We use excellent open source components assessed and tested by us to avoid 'reinventing the wheel'.
 
 So far, we have implemented a high performance block storage system, which supports snapshot, clone and recovery, and can be attached on QEMU virtual machine or physical machine (by curve-nbd). CURVE has been served as an elastic block storage service inside NetEase for a certain time, during which high performance and reliability have shown.
 
-## Design Documentation
+### CURVE Architecture
 
-- Wanna have a glance at CURVE? Click here for [Intro to CURVE](https://opencurve.github.io/)!
-- Want more details? Our documentation for every component:
-  - [NEBD](docs/cn/nebd.md)
-  - [MDS](docs/cn/mds.md)
-  - [Chunkserver](docs/cn/chunkserver_design.md)
-  - [Snapshotcloneserver](docs/cn/snapshotcloneserver.md)
-  - [CURVE quality control](docs/cn/quality.md)
-  - [CURVE monitoring](docs/cn/monitor.md)
-  - [Client](docs/cn/curve-client.md)
-  - [Client Python API](docs/cn/curve-client-python-api.md)
-- Application based on CURVE
-  - [Work with k8s](docs/cn/k8s_csi_interface.md)
+### Basic structure
 
-## Quick Start
+To dig into CURVE, it would be better is we first have an overview on it. CURVE cluster is composed of three core components: MDS, Chunkserver and Client.
 
-Want to try on it? Take it easy! We'll help you step by step, but make sure you've read this [Special Statement](docs/cn/deploy.md#%E7%89%B9%E5%88%AB%E8%AF%B4%E6%98%8E) before you start.
+![image-20200709165154104](https://opencurve.github.io/image/architecture.png)
 
-### Deploy an all-in-one environment (to try how CURVE works)
+#### MDS
 
-[Deploy on single machine](docs/cn/deploy.md#%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2)
+MDS serve as the center node of CURVE, responsible for managing metadata and scheduling. Metadata includes system topology information, namespace of the file system (e.g. tree-based directory, directory metadata, etc.) and copyset placement data. Scheduling is to monitor the status of the cluster and coordinate their running, including detecting on/offline status and collecting workload data of chunkservers, balancing load of clusters and recovering data from failures. MDS support high availability by leader election of etcd clusters. Data between leader-MDS and follower-MDS will not be synchronized, instead, follower-MDS will restart the service by reloading data from etcd.
 
-### Deploy multi-machine cluster (try it in production environment)
+#### Chunkserver
 
-[Deploy on multiple machines](docs/cn/deploy.md#%E5%A4%9A%E6%9C%BA%E9%83%A8%E7%BD%B2)
+A chunkserver is a datanode that store actual file data. The unit of data storing is chunks, while the unit of data managing is copyset, and overwrite is supported. Chunkservers replicate data following Raft algorithm, which is crucial for the consensus of copies and disaster recovery. Copies are managed in copysets, and copysets on different nodes,  which are replicas of each other, composite a Raft group. MDS will manage the load balance between chunkservers, also in unit of copyset.
 
-Feeling good? Maybe you would like to contribute your codes and make CURVE better!
+#### Client
 
-## For Developers
+Client provides near-POSIX interface for applications, and implements metadata and file data operations by the interactions with MDS and chunkservers, also, it splits the I/O, operates specified QoS control on IOPS and bandwith. Hot upgrade is suported by Client, its version can be updated without user's awareness.
 
-### Deploy build and development environment
+### Snapshot & Clone
 
-[development environment deployment](docs/cn/build_and_run.md)
+The snapshot and clone service of CURVE block storage system is provided by a seperated subsystem, implemented by a component called SnapShotCloneServer. Incremental and full snapshot are both supported, and for saving spaces, snapshot that users created will be uploaded to S3 clusters.
 
-### Compile test cases and run
-[test cases compiling and running](docs/cn/build_and_run.md#%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E7%BC%96%E8%AF%91%E5%8F%8A%E6%89%A7%E8%A1%8C)
+![image-snap](https://opencurve.github.io/image/architecture_snap.png)
 
-### Coding style guides
-CURVE is coded following [Google C++ Style Guide strictly](https://google.github.io/styleguide/cppguide.html). Please follow this guideline if you're trying to contribute your codes.
+### Core features
 
-### Code coverage requirement
-1. Unit tests：Incremental line coverage ≥ 80%, incremental branch coverage ≥ 70%
-2. Integration tests：Measure together with unit tests, and should fulfill the same requirement
-3. Exception tests：Not required
+#### High performance
 
-### Other processes
-TODO
+High performance is one of the core features of CURVE, and also our motivation of starting this project. For RPC implementation we used [brpc](https://github.com/apache/incubator-brpc), an open-source high performance and low latency industrial-grade RPC framework. As for consensus of replicas, we implemented by [braft](https://github.com/baidu/braft), which is an open-source quorum-based Raft algorithm implementation. In the aspect of protocol, quorum mechanism can do better than strong replica consistancy model in latency. In our implementation, we optimized the snapshot of braft by using chunkfilepool (specify a certain portion of space for chunk during the initialization of the cluster) on the replicated state machine of Raft to achieve zero write amplification. Also, CURVE implements a finer grain of data address hashing on chunks to achieve read/write splitting and reduce I/O collision, which improve I/O performance furthermore.
 
-## Release Cycle
-- CURVE release cycle：Half a year for major version, 1~2 months for minor version
-- Versioning format: We use a sequence of three digits (x.y.z), x is the major version, y is for distinguishing developing , RC and GA version (corresponding to 0, 1 and 2), and z is for marking BugFixes or minor version. Major version x will increase 1 every half year, and z will increase every 1~2 months. 
+#### High availability
 
-## Feedback & Contact
+High availability is another core feature of CURVE. Multi-instances is supported by MDS, ChunkServer and SnapShotCloneServer, protect the the whole cluster from single point of failure.
 
-- [Github Issues](https://github.com/openCURVE/CURVE/issues)：You are sincerely welcomed to issue any bugs you came across or any suggestions through Github issues. If you have any question you can refer to our FAQ or join our user group for more details.
-- [FAQ](https://github.com/openCURVE/CURVE/wiki/CURVE-FAQ)：Commonly asked question in our user group, and we'll keep working on it.
-- User group：We use Wechat group currently.
+- **MDS**
 
-<img src="https://raw.githubusercontent.com/opencurve/opencurve.github.io/master/image/curve-wechat.jpeg" style="zoom: 75%;" />
+  MDS is stateless, we recomend that at least two instances should be deployed. Multiple MDS will do leader election through etcd, and the switch between instances can be finished within seconds when one of the instance fail. Client and SnapShotCloneServer will retry the request that the failed instance was processing, in order not to affect the availability of the cluster.
+
+- **SnapShotCloneServer**
+
+  Similar to MDS, SnapShotCloneServer also elect for leader by etcd, but it provide services through load balance. Retries on request during the failure are idempotent, without affecting the correctness and availability of the system.
+
+- **ChunkServer**
+
+  Chunkserver is implemented in clusters, and maintain data consensus through Raft protocol, its load balance of is maintained by MDS. When single point of failure happens, every copyset on this chunkserver will be affected. In this case, leader node of a copyset will interrupt its service and wait for reelection. But for those follower nodes, the service will still go on. When a chunkserver fail and not able to recover in a certain peroid of time, MDS will migrate all its data to another node that functions well.
+  
+
+### Project Page
+
+[Github link for source code](https://github.com/opencurve/curve)
+
+### Contact
+
+Wechat group：CURVE沟通交流群

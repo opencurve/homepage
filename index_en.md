@@ -66,4 +66,3 @@ High availability is another core feature of CURVE. Multi-instances is supported
 Wechat group：CURVE沟通交流群
 
 <img src="image/curve-wechat.jpeg" style="zoom: 75%;" />
-

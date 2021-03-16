@@ -1,70 +1,67 @@
-# CURVE 简介
+# CURVE
 
-### CURVE是什么
+## What is CURVE ?
 
-CURVE是网易自主设计研发的高性能、高可用、高可靠分布式存储系统，具有非常良好的扩展性。基于该存储底座可以打造适用于不同应用场景的存储系统，如块存储、对象存储、云原生数据库等。CURVE 的设计开发始终围绕三个理念：一是顺应当前存储硬件设施发展趋势，做到软硬件结合打造顶级的存储产品；二是秉持 "Simple Can be harder than complex"，了解问题本质情况下选择最简单的方案解决问题；三是拥抱开源，在充分调研的前提下使用优秀的开源项目组件，避免造轮子。
+CURVE is a high-performance, high-availability and high-reliability distributed storage system independently designed and developed by NetEase, with very good scalability. Based on the storage base, storage systems suitable for different application scenarios can be built, such as block storage, object storage, cloud native database, etc. The design and development of CURVE always revolves around three concepts: one is to conform to the current development trend of storage hardware facilities, to achieve the combination of software and hardware to create top-level storage products; the second is to uphold "Simple Can be harder than complex" and choose the simplest solution to the problem under the condition of understanding the nature of the problem; the third is to embrace open source, use excellent open source project components under the premise of full research, and avoid reinventing the wheel.
 
-当前我们基于CURVE已经实现了高性能块存储系统，支持快照克隆和恢复 ,支持QEMU虚拟机和物理机NBD设备两种挂载方式, 在网易内部作为高性能云盘使用。
+At present, we have implemented a high-performance block storage system based on CURVE, which supports snapshot, clone and recover, supports two mounting methods of QEMU(virtual machine) and NBD(physical machine), and is used as a high-performance cloud disk inside NetEase.
 
-### CURVE架构
+## CURVE architecture
 
-### 基本架构
+### Basic architecture
 
-要深入了解 CURVE 首先要了解 CURVE 整体架构。CURVE集群主要包括三个核心组件：MDS、Chunkserver、Client。
+To have some insight into CURVE, you must first understand the overall architecture of CURVE. The CURVE cluster mainly includes three core components: MDS, Chunkserver, and Client.
 
 ![image-20200709165154104](image/architecture.png)
 
 #### MDS
 
-MDS是中心节点。它有两方面职责：一是存储管理元数据信息，包括系统的拓扑信息、文件系统的Namespace ( 树形目录结构，文件和目录，目录元信息等 ) 、Copyset ( Raft 复制组) 位置信息。二是感知集群状态并进行合理调度，包括感知Chunkserver上下线、收集Chunkserver负载信息、集群负载均衡与故障修复。MDS通过Etcd进行选主实现高可用，Leader-MDS 和 Follower-MDS并不进行数据同步，Leader-MDS挂掉之后，Follower-MDS从Etcd加载数据后再启动服务。
+MDS is the central node. It has two responsibilities: one is to store and manage metadata information, including system topology information, file system Namespace (tree directory structure, files and directories, directory meta information, etc.), Copyset (Raft replication group) location information. The second is to sense the cluster status and perform reasonable scheduling, including sensing Chunkserver going online and offline, collecting Chunkserver load information, cluster load balancing and fault repair. MDS uses Etcd to select masters to achieve high availability. Leader-MDS and Follower-MDS do not synchronize data. After Leader-MDS hangs, Follower-MDS loads data from Etcd and then starts the service.
 
 #### Chunkserver
 
-Chunkserver是数据节点，负责数据存储。数据存储的最小单元是 chunk，支持覆盖写，管理数据存储的基本单位是Copyset。Chunkserver使用 Raft 协议做复制，保持数据的一致性和容灾。副本以 Copyset 为单位进行管理，不同节点上的多个 Copyset 构成一个 Raft Group，互为副本。数据在多个 Chunkserver 之间的负载均衡由 MDS 调度，是以 CopySet 为单位进行调度。
+Chunkserver is the data node, responsible for data storage. The smallest unit of data storage is chunk, which supports overwriting, and the basic unit for managing data storage is Copyset. Chunkserver uses the Raft protocol for replication to maintain data consistency and disaster tolerance. Copies are managed in units of Copysets. Multiple Copysets on different nodes form a Raft Group, which are copies of each other. The load balancing of data among multiple Chunkservers is scheduled by MDS, which is scheduled in units of CopySet.
 
 #### Client
 
-Client是客户端，向应用提供类Posix文件系统接口，与MDS交互实现对元数据的增删改查，与Chunkserver交互实现对数据的增删改查，对io进行切分，对IOPS和带宽进行指定的QoS控制。Client还支持热升级，可以在用户无感知的情况下进行底层版本变更。
+Client provides a Posix-like file system interface to the application. It interacts with MDS to implement addition, deletion, modification, and query of metadata. It interacts with Chunkserver to implement addition, deletion, modification, and query of data, splits io, and performs specified QoS control on IOPS and bandwidth. Client also supports hot upgrades, which can make changes to the underlying version without the user's perception.
 
-### 快照克隆
+### Snapshot clone
 
-CURVE块存储系统中快照克隆子系统是独立于CURVE核心服务的，快照克隆操作由单独的SnapShotCloneServer进行处理，用户创建的快照会上传到S3集群以节约存储空间，并且支持增量和全量两种快照方式。
+The snapshotclone subsystem in the CURVE block storage system is independent of the CURVE core service. The snapshotclone operation is processed by a separate SnapShotCloneServer. The snapshots created by the user and will be uploaded to the S3 cluster to save storage space, and it supports both incremental and full snapshots.
 
 ![image-snap](image/architecture_snap.png)
 
-### 核心特性
+## Core features
 
-#### 高性能
+### high performance
 
-高性能是 CURVE 的一大特点，也是我们创建CURVE项目的初衷。RPC 层面 CURVE 采用了高性能和低延迟并且已开源的 [brpc](https://github.com/apache/incubator-brpc)；在一致性层面 选择了基于 quorum 机制并且开源的 [braft](https://github.com/baidu/braft)，从协议层面来说 quorum 机制在延迟方面天生优于多副本强一致的方式。实现上CURVE 对 braft 快照的实现进行了优化，在状态机的实现上采用 chunkfilepool 的方式 ( 初始化集群的时候格式化出指定比例的空间用作 chunk ) 使得底层的写入放大为 0；此外CURVE还在chunk上进行更细力度的地址空间hash以达到读写分离、减小 IO碰撞等的效果，从而进一步提升IO性能。
+High performance is a major feature of CURVE, and it is also our original intention to create the CURVE project. At the RPC level, CURVE uses the high-performance and low-latency open source [brpc](https://github.com/apache/incubator-brpc); at the consistency level, the quorum-based and open source [braft](https ://github.com/baidu/braft). From the protocol level, the quorum mechanism is inherently better than the multi-copy strong consistency method in terms of latency. CURVE optimizes the implementation of braft snapshots. In the implementation of the state machine, the chunkfilepool method is used (when the cluster is initialized, a specified proportion of space is formatted as chunks) so that the underlying write magnification is 0; in addition, CURVE also Perform more detailed address space hashing on chunks to achieve the effects of read-write separation and reduce IO collisions, thereby further improving IO performance.
 
-#### 高可用
+### High availability
 
-高可用是CURVE的另一大特点。MDS、ChunkServer 以及 SnapShotCloneServer都支持多实例部署，部分实例异常不影响整个集群的可用性。
+High availability is another major feature of CURVE. MDS, ChunkServer and SnapShotCloneServer all support multi-instance deployment. Abnormalities in some instances will not affect the availability of the entire cluster.
 
-- **MDS** 
+- **MDS**
 
-  MDS是无状态的，推荐至少部署两个实例。通过Etcd进行选主。多个MDS实例通过Etcd进行选主，当单个实例失效时，可以秒级切换到另外一个实例。失效实例上正在处理的请求，Client和SnapShotCloneServer都会对其进行重试，以达到不影响集群可用性的效果。  
+  MDS is stateless, and it is recommended to deploy at least two instances. Multiple MDS instances are selected through Etcd. When a single instance fails, it can switch to another instance in seconds. Both the Client and SnapShotCloneServer will retry the requests being processed on the failed instance, to achieve the effect of not affecting the availability of the cluster.
 
 - **SnapShotCloneServer**
 
-  SnapShotCloneServer与MDS类似, 也是通过Etcd进行选主，不同的是，它通过负载均衡对外提供服务。失效期间的请求失败重试都是幂等的，不影响任务的正确性以及集群的可用性。
+  SnapShotCloneServer is similar to MDS. It also selects the master through Etcd. The difference is that it provides external services through load balancing. Request failure retries during the invalidation period are all idempotent and do not affect the correctness of the task and the availability of the cluster.
 
 - **ChunkServer**
 
-  ChunkServer是一个集群，通过Raft协议保持数据一致性，并通过MDS做负载均衡。单个节点失效时，会影响到这个节点上存储的所有Copyset。对于Copyset上的Leader节点，会中断服务，等待重新选举；对于Copyset上的follower节点，服务不会受影响。当某个Chunkserver节点失效且在一段时间内无法恢复，MDS会将其上的数据迁移到其他节点上。
+  ChunkServer is a cluster that maintains data consistency through the Raft protocol and performs load balancing through MDS. When a single node fails, all Copysets stored on this node will be affected. For the Leader node on the Copyset, the service will be interrupted and wait for re-election; for the follower node on the Copyset, the service will not be affected. When a Chunkserver node fails and cannot be recovered within a period of time, MDS will migrate the data on it to other nodes.
 
-### 项目地址
+## Curve project
 
-[github源码地址](https://github.com/opencurve/curve)
+[source code in github](https://github.com/opencurve/curve)
 
-### 联系方式
+## contact us
 
-微信交流群：CURVE沟通交流群
+WeChat group: CURVE communication group
 
-由于CURVE沟通交流群人数满200人，请先添加以下个人微信，再邀请进群
-
-
+Since the CURVE communication group has more than 200 people, please add the following personal WeChat first. And then we will invite you to join the group.
 
 <img src="image/curve-wechat.jpeg" style="zoom: 75%;" />
-

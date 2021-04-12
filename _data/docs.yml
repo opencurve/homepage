@@ -1,0 +1,8 @@
+- title: Documentation
+  docs:
+  - home
+
+- title: Quick Start
+  docs:
+  - deploy
+

@@ -1,1 +1,57 @@
-theme: jekyll-theme-slate
+# Site settings
+title: Curve
+email: storage_mgm@163.com
+description: >
+  Curve is a distributed block, object and file storage platform.
+lang: zh-cmn-Hans
+
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: https://cw123.github.io # the base hostname & protocol for your site
+git_address: https://github.com/opencurve/opencurve.github.io
+git_edit_address: https://github.com/opencurve/opencurve.github.io/blob/master
+
+# theme options from https://bootswatch.com/3/
+# comment out this to use default Bootstrap
+bootwatch: paper # cerulean cosmo custom cyborg darkly flatly journal lumen readable sandstone simplex slate solar spacelab superhero united yeti
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+# Plugins (previously gems:)
+plugins:
+  - jekyll-feed
+  - jekyll-redirect-from
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - .idea/
+  - .gitignore
+  - README.md
+timezone: Asia/Shanghai
+defaults:
+- scope:
+    path: _posts
+    type: posts
+  values:
+    layout: post
+    sectionid: blog
+
+- scope:
+    path: _docs
+    type: docs
+  values:
+    layout: docs
+    sectionid: docs
+    seo:
+      type: "WebPage"
+
+collections:
+  docs:
+    permalink: /:collection/:path/
+    output: true
+  posts:
+    permalink: /blog/:year/:month/:day/:title/
+    output: true

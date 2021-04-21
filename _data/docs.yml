@@ -1,8 +1,20 @@
 - title: Documentation
   docs:
   - home
+  - chunkserver_design_en.md
+  - client_en.md
+  - mds_en.md
+  - monitor_en.md
+  - nebd_en.md
+  - snapshotcloneserver_en.md
+  - quality_en.md
+  - curve_ops_tool_en.md
+  - curve-client-python-api_en.md
+  - k8s_csi_interface_en.md
+
 
 - title: Quick Start
   docs:
-  - deploy
+  - deploy.md
+  - build_and_run_en.md
 

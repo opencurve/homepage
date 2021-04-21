@@ -15,41 +15,41 @@ So far, we have implemented a high performance block storage system, which suppo
 
 - Wanna have a glance at CURVE? Click here for [Intro to CURVE](https://www.opencurve.io/)!
 - Want more details? Our documentation for every component:
-  - [NEBD](https://github.com/opencurve/curve/blob/master/docs/en/nebd_en.md)
-  - [MDS](https://github.com/opencurve/curve/blob/master/docs/en/mds_en.md)
-  - [Chunkserver](https://github.com/opencurve/curve/blob/master/docs/en/chunkserver_design_en.md)
-  - [Snapshotcloneserver](https://github.com/opencurve/curve/blob/master/docs/en/snapshotcloneserver_en.md)
-  - [CURVE quality control](https://github.com/opencurve/curve/blob/master/docs/en/quality_en.md)
-  - [CURVE monitoring](https://github.com/opencurve/curve/blob/master/docs/en/monitor_en.md)
-  - [Client](https://github.com/opencurve/curve/blob/master/docs/en/client_en.md)
-  - [Client Python API](https://github.com/opencurve/curve/blob/master/docs/en/curve-client-python-api_en.md)
+  - [NEBD](../nebd_en.md)
+  - [MDS](../mds_en.md)
+  - [Chunkserver](../chunkserver_design_en.md)
+  - [Snapshotcloneserver](../snapshotcloneserver_en.md)
+  - [CURVE quality control](../quality_en.md)
+  - [CURVE monitoring](../monitor_en.md)
+  - [Client](../client_en.md)
+  - [Client Python API](../curve-client-python-api_en.md)
 - Application based on CURVE
-  - [Work with k8s](https://github.com/opencurve/curve/blob/master/docs/en/k8s_csi_interface_en.md)
+  - [Work with k8s](../k8s_csi_interface_en.md)
 
 ## Quick Start
 
-Want to try on it? Take it easy! We'll help you step by step, but make sure you've read this [Special Statement](https://github.com/opencurve/curve/blob/master/docs/en/deploy_en.md#special-statement) before you start.
+Want to try on it? Take it easy! We'll help you step by step, but make sure you've read this [Special Statement](../deploy_en.md#special-statement) before you start.
 
 ### Deploy an all-in-one environment (to try how CURVE works)
 
-[Deploy on single machine](https://github.com/opencurve/curve/blob/master/docs/en/deploy_en.md#deploy-on-single-machine)
+[Deploy on single machine](../deploy_en.md#deploy-on-single-machine)
 
 ### Deploy multi-machine cluster (try it in production environment)
 
-[Deploy on multiple machines](https://github.com/opencurve/curve/blob/master/docs/en/deploy_en.md#deploy-on-multiple-machines)
+[Deploy on multiple machines](../deploy_en.md#deploy-on-multiple-machines)
 
 ### curve_ops_tool introduction
 
-[curve_ops_tool introduction](https://github.com/opencurve/curve/blob/master/docs/en/curve_ops_tool_en.md)
+[curve_ops_tool introduction](../curve_ops_tool_en.md)
 
 ## For Developers
 
 ### Deploy build and development environment
 
-[development environment deployment](https://github.com/opencurve/curve/blob/master/docs/en/build_and_run_en.md)
+[development environment deployment](../build_and_run_en.md)
 
 ### Compile test cases and run
-[test cases compiling and running](https://github.com/opencurve/curve/blob/master/docs/en/build_and_run_en.md#test-case-compilation-and-execution)
+[test cases compiling and running](../build_and_run_en.md#test-case-compilation-and-execution)
 
 ### Coding style guides
 CURVE is coded following [Google C++ Style Guide strictly](https://google.github.io/styleguide/cppguide.html). Please follow this guideline if you're trying to contribute your codes.

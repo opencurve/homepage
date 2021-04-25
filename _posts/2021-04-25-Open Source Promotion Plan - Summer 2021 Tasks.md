@@ -4,7 +4,7 @@ title:  "开源软件供应链点亮计划 - 暑期 2021"
 author: xuchaojie
 ---
 
-# 开源软件供应链点亮计划 - 暑期 2021 简介
+### 开源软件供应链点亮计划 - 暑期 2021 简介
 
 开源软件供应链点亮计划 - 暑期 2021（以下简称 暑期 2021）是由 中国科学院软件研究所 与 openEuler 社区 共同举办的一项面向高校学生的暑期活动，旨在鼓励在校学生积极参与开源软件的开发维护，促进优秀开源软件社区的蓬勃发展。
 
@@ -14,11 +14,11 @@ author: xuchaojie
 Curve项目页面：https://summer.iscas.ac.cn/#/org/orgdetail/opencurve
 
 
-## 活动的组织方
+#### 活动的组织方
 
 本次活动由中国科学院软件研究所、openEuler 社区主办，当前是第二届。
 
-## 活动参与方及角色
+#### 活动参与方及角色
 
 活动参与方主要角色为学生、社区和导师。
 
@@ -26,13 +26,13 @@ Curve项目页面：https://summer.iscas.ac.cn/#/org/orgdetail/opencurve
 - 社区：社区提供项目列表和描述，并安排项目对应的导师，导师与申请者沟通方案、并从申请者中选中一位承接项目。在为期三个月的开发周期中，导师指导学生进行对应项目的开发工作。
 - 导师：社区针对每一个项目指定一个社区导师，与学生一起制定合适的开发计划和方案，指导学生按计划完成开发。
 
-## 项目的奖金
+#### 项目的奖金
 - 每个项目难度分为高、中、低三档，对应税前奖金分别为高（12000 元）、中（9000 元）、低（6000 元）。（注：奖金数额为税前人民币金额）。
 - 难度分级由社区根据项目任务决定。
 
-# 本次Curve社区参与暑期2021项目介绍
+### 本次Curve社区参与暑期2021项目介绍
 
-## 1. ChunkServer端client模块增加打开文件缓存超时或淘汰策略
+#### 1. ChunkServer端client模块增加打开文件缓存超时或淘汰策略
 
 - 项目标题：ChunkServer端client模块增加打开文件缓存超时或淘汰策略
 - 项目描述：
@@ -55,7 +55,7 @@ Curve ChunkServer端使用的client模块打开curve卷，这个卷并没有关�
   + Curve: https://github.com/opencurve/curve
   + Curve meetup slides：https://github.com/opencurve/curve-meetup-slides
 
-## 2. python重构curve_ops_tool
+#### 2. python重构curve_ops_tool
 
 - 项目标题：python重构curve_ops_tool
 - 项目描述：
@@ -92,7 +92,7 @@ curve是一个底层存储软件，对外提供的client也是一个动态库的
   + Curve: https://github.com/opencurve/curve
   + Curve meetup slides：https://github.com/opencurve/curve-meetup-slides
 
-## 3. curve快照克隆一致性检查工具
+#### 3. curve快照克隆一致性检查工具
 - 项目标题：curve快照克隆一致性检查工具。
 - 项目描述：
 curve发起快照（克隆）之后，会生成一个快照卷（克隆卷）。希望有工具能够检查源卷和快照卷（克隆卷）的数据是否一致。如果不一致，能够找到不一致的地方，直观方便地帮助定位问题。
@@ -118,7 +118,7 @@ curve发起快照（克隆）之后，会生成一个快照卷（克隆卷）。
   + Curve: https://github.com/opencurve/curve
   + Curve meetup slides：https://github.com/opencurve/curve-meetup-slides
 
-## 更多项目陆续更新中，敬请期待...
+#### 更多项目陆续更新中，敬请期待...
 
 
 

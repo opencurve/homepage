@@ -7,11 +7,44 @@ redirect_from: /docs/index.md
 ![curve logo](/assets/img/curve-logo1.png)
 
 ## Curve
-CURVE is a distributed storage system designed and developed independently by NetEase, featured with high performance, high availability, high reliability and well expansibility, and it can serve as the basis for storage systems designed for different scenario (e.g. block storage, object storage and cloud database).
 
-So far, we have implemented a high performance block storage system, which supports snapshot, clone and recovery, and it can be attached to QEMU virtual machine or physical machine (by curve-nbd). CURVE has been served as an elastic block storage service inside NetEase for a certain time, during which high performance and reliability have shown.
+Curve is a distributed storage system designed and developed by NetEase, featured with high performance, easy operation and cloud native. Curve is compose of CurveBS(Curve Block Storage) and CurveFS(Curve FileSystem). CurveBS supports snapshot, clone, and recover, also supports virtual machines with qemu and physical machine with nbd. CurveFS supports POSIX based on Fuse.
 
 The Roadmap of Curve: [Roadmap](https://github.com/opencurve/curve/wiki/Roadmap)
+## Curve vs Ceph
+
+Curve: v1.2.0
+
+Ceph: L/N
+### Performance
+Curve random read and write performance far exceeds Ceph in the block storage scenario.
+
+Environment：3 replicas on a 6-node cluster, each node has 20xSATA SSD, 2xE5-2660 v4 and 256GB memory.
+
+Single Vol：
+![1-nbd](/assets/img/1-nbd-en.png)
+
+Multi Vols：
+![10-nbd](/assets/img/10-nbd-en.png)
+
+
+### Stability
+
+The stability of the common abnormal Curve is better than that of Ceph in the block storage scenario.
+
+| Fault Case | One Disk Failure | Slow Disk Detect | One Server Failure | Server Suspend Animation |
+| ---- | ---- | ---- | ---- | ---- |
+| Ceph | jitter 7s | Continuous io jitter | jitter 7s | unrecoverable |
+| Curve | jitter 4s | no effect | jitter 4s | jitter 4s |
+
+### Ops
+
+Curve ops is more friendly than Curve in the block storage scenario.
+
+| Ops scenarios | Upgrade clients | Balance |
+| ---- | ---- | ---- |
+| Ceph | do not support live upgrade | via plug-in with IO influence |
+| Curve | support live upgrade with second jitter | auto with no influence on IO |
 
 ## Design Documentation
 
